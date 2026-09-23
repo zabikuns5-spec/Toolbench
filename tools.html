@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Toolbench — 30+ Everyday Utilities</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --steel-1:#e4e6e8; --steel-2:#c7cace; --steel-3:#a9adb2; --steel-4:#8a8e93;
+  --deep:#3d4045; --ink:#22242A; --sub:#5c6066;
+  --accent:#FF7A1A; --accent-dark:#C6560A;
+  --panel-top:#f2f3f4; --panel-bot:#c9ccd0;
+  --line: rgba(0,0,0,.18); --hi: rgba(255,255,255,.65);
+  --cube-a:#c9ccd0; --cube-b:#8a8e93;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --steel-1:#3a3c40; --steel-2:#2c2e31; --steel-3:#232427; --steel-4:#171819;
+    --deep:#101113; --ink:#EDEEF0; --sub:#9AA0A6;
+    --panel-top:#35373b; --panel-bot:#202124;
+    --line: rgba(0,0,0,.5); --hi: rgba(255,255,255,.06);
+    --cube-a:#3a3c40; --cube-b:#141517;
+  }
+}
+:root[data-theme="dark"]{
+  --steel-1:#3a3c40; --steel-2:#2c2e31; --steel-3:#232427; --steel-4:#171819;
+  --deep:#101113; --ink:#EDEEF0; --sub:#9AA0A6;
+  --panel-top:#35373b; --panel-bot:#202124;
+  --line: rgba(0,0,0,.5); --hi: rgba(255,255,255,.06);
+  --cube-a:#3a3c40; --cube-b:#141517;
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  margin:0;color:var(--ink);font-family:Inter,system-ui,sans-serif;min-height:100%;
+  background:radial-gradient(120% 140% at 50% -10%, var(--steel-1), var(--steel-3) 55%, var(--steel-4) 100%);
+  background-attachment:fixed; position:relative; overflow-x:hidden;
+}
+/* ---- real 3D animated background ---- */
+.scene{position:fixed;inset:0;overflow:hidden;z-index:0;pointer-events:none;perspective:900px}
+.cube{position:absolute;width:64px;height:64px;transform-style:preserve-3d;animation:spin linear infinite;opacity:.4}
+.cube div{position:absolute;width:64px;height:64px;border:1px solid var(--line);
+  background:linear-gradient(135deg, var(--cube-a), var(--cube-b));box-shadow:inset 0 0 12px rgba(0,0,0,.2)}
+.cube .f1{transform:translateZ(32px)} .cube .f2{transform:rotateY(180deg) translateZ(32px)}
+.cube .f3{transform:rotateY(90deg) translateZ(32px)} .cube .f4{transform:rotateY(-90deg) translateZ(32px)}
+.cube .f5{transform:rotateX(90deg) translateZ(32px)} .cube .f6{transform:rotateX(-90deg) translateZ(32px)}
+@keyframes spin{ from{transform:rotateX(0) rotateY(0)} to{transform:rotateX(360deg) rotateY(360deg)} }
+.c1{top:6%; left:4%; width:44px;height:44px; animation-duration:22s}
+.c1 div{width:44px;height:44px} .c1 .f1,.c1 .f2{transform:translateZ(22px)} .c1 .f2{transform:rotateY(180deg) translateZ(22px)}
+.c1 .f3{transform:rotateY(90deg) translateZ(22px)} .c1 .f4{transform:rotateY(-90deg) translateZ(22px)}
+.c1 .f5{transform:rotateX(90deg) translateZ(22px)} .c1 .f6{transform:rotateX(-90deg) translateZ(22px)}
+.c2{top:65%; left:88%; animation-duration:28s}
+.c3{top:80%; left:10%; width:36px;height:36px; animation-duration:16s}
+.c3 div{width:36px;height:36px} .c3 .f1,.c3 .f2{transform:translateZ(18px)} .c3 .f2{transform:rotateY(180deg) translateZ(18px)}
+.c3 .f3{transform:rotateY(90deg) translateZ(18px)} .c3 .f4{transform:rotateY(-90deg) translateZ(18px)}
+.c3 .f5{transform:rotateX(90deg) translateZ(18px)} .c3 .f6{transform:rotateX(-90deg) translateZ(18px)}
+.c4{top:12%; left:80%; animation-duration:20s; animation-direction:reverse}
+.c5{top:40%; left:48%; width:30px;height:30px; animation-duration:34s; opacity:.25}
+.c5 div{width:30px;height:30px} .c5 .f1,.c5 .f2{transform:translateZ(15px)} .c5 .f2{transform:rotateY(180deg) translateZ(15px)}
+.c5 .f3{transform:rotateY(90deg) translateZ(15px)} .c5 .f4{transform:rotateY(-90deg) translateZ(15px)}
+.c5 .f5{transform:rotateX(90deg) translateZ(15px)} .c5 .f6{transform:rotateX(-90deg) translateZ(15px)}
+@media (prefers-reduced-motion: reduce){ .cube{animation:none} }
+
+header,.wrap,.overlay{position:relative; z-index:1}
+header{
+  padding:16px 20px;border-bottom:1px solid var(--line);
+  background:linear-gradient(var(--steel-2), var(--steel-3));
+  box-shadow:0 2px 0 var(--hi) inset, 0 3px 10px rgba(0,0,0,.25);
+  position:sticky; top:0; z-index:20;
+}
+.brand-row{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.mark{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:20px;background:linear-gradient(var(--accent), var(--accent-dark));color:#fff;padding:6px 12px;border-radius:8px;box-shadow:0 2px 0 var(--accent-dark), inset 0 1px 0 rgba(255,255,255,.5), 0 4px 8px rgba(0,0,0,.35);letter-spacing:.5px}
+h1{font-size:17px;margin:0;font-weight:700}
+.tag{font-size:12px;color:var(--sub);margin:1px 0 0}
+.topnav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center}
+.nav-link{font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;background:linear-gradient(var(--panel-top), var(--panel-bot));border:none;padding:9px 14px;border-radius:8px;box-shadow:0 2px 0 var(--line), inset 0 1px 0 var(--hi)}
+.nav-link:active{box-shadow:inset 0 2px 4px rgba(0,0,0,.35); transform:translateY(1px)}
+.nav-link.on{background:linear-gradient(var(--accent), var(--accent-dark));color:#fff;box-shadow:0 2px 0 var(--accent-dark), inset 0 1px 0 rgba(255,255,255,.5)}
+.wrap{max-width:1120px;margin:0 auto;padding:24px 20px 70px;display:grid;grid-template-columns:220px 1fr;gap:22px}
+@media (max-width:760px){.wrap{grid-template-columns:1fr}}
+nav#toolnav{display:flex;flex-direction:column;gap:7px;max-height:74vh;overflow-y:auto;padding-right:4px}
+@media (max-width:760px){nav#toolnav{flex-direction:row;overflow-x:auto;max-height:none;padding-bottom:6px}}
+.tool-btn{font-family:inherit;text-align:left;font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;background:linear-gradient(var(--panel-top), var(--panel-bot));border:none;padding:10px 13px;border-radius:9px;box-shadow:0 2px 0 var(--line), inset 0 1px 0 var(--hi); white-space:nowrap}
+.tool-btn.active{color:#fff;background:linear-gradient(var(--accent), var(--accent-dark));box-shadow:0 2px 0 var(--accent-dark), inset 0 -2px 4px rgba(0,0,0,.25)}
+.tool-btn:focus-visible,.nav-link:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.plate{background:linear-gradient(var(--panel-top), var(--panel-bot));border-radius:14px; padding:26px;min-height:320px;box-shadow:0 1px 0 var(--hi) inset, 0 10px 24px rgba(0,0,0,.28), 0 1px 0 var(--line);border:1px solid rgba(0,0,0,.15)}
+.plate h2{margin:0 0 4px;font-size:19px}
+.plate .hint{color:var(--sub);font-size:13px;margin:0 0 18px}
+label{display:block;font-size:12px;color:var(--sub);margin:14px 0 5px;font-weight:600}
+label:first-of-type{margin-top:0}
+input[type=text],input[type=number],input[type=date],input[type=email],input[type=password],select,textarea{
+  width:100%;padding:11px 12px;border:none;border-radius:8px;background:var(--steel-1);color:var(--ink);font-family:inherit;font-size:14px;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.25), inset 0 -1px 0 var(--hi);
+}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;gap:12px}
+.row > *{flex:1}
+button.go{margin-top:16px;background:linear-gradient(var(--accent), var(--accent-dark));color:#fff;border:none;font-weight:700;font-size:14px;padding:12px 20px;border-radius:9px;cursor:pointer;font-family:inherit;box-shadow:0 3px 0 var(--accent-dark), inset 0 1px 0 rgba(255,255,255,.5), 0 6px 12px rgba(0,0,0,.25)}
+button.go:active{transform:translateY(2px);box-shadow:0 1px 0 var(--accent-dark), inset 0 1px 0 rgba(255,255,255,.5)}
+.out{margin-top:18px;padding:15px 17px;background:var(--deep);color:#F4E9D8;border-radius:9px;font-family:'JetBrains Mono',monospace;font-size:14px;line-height:1.6;white-space:pre-wrap;box-shadow:inset 0 2px 6px rgba(0,0,0,.6)}
+.out b{color:var(--accent);font-size:18px}
+p.doc{color:var(--sub);font-size:14px;line-height:1.7;max-width:640px}
+p.doc b{color:var(--ink)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
+.overlay.show{display:flex}
+.modal{width:min(360px, 100%); background:linear-gradient(var(--panel-top), var(--panel-bot)); border-radius:14px;padding:24px; box-shadow:0 20px 50px rgba(0,0,0,.5), inset 0 1px 0 var(--hi)}
+.modal h3{margin:0 0 4px}
+.modal .hint{color:var(--sub);font-size:12.5px;margin:0 0 16px}
+.tabs2{display:flex;gap:8px;margin-bottom:16px}
+.tabs2 button{flex:1;padding:8px;border:none;border-radius:7px;font-weight:600;font-size:13px;cursor:pointer;background:var(--steel-1);color:var(--sub)}
+.tabs2 button.on{background:linear-gradient(var(--accent),var(--accent-dark));color:#fff}
+.modal-close{float:right;background:none;border:none;font-size:18px;color:var(--sub);cursor:pointer}
+.notice{font-size:11.5px;color:var(--sub);margin-top:12px;line-height:1.5}
+.user-chip{font-size:13px;font-weight:600;color:var(--ink);padding:8px 10px}
+::selection{background:var(--accent);color:#fff}
+</style>
+</head>
+<body>
+<div class="scene" aria-hidden="true">
+  <div class="cube c1"><div class="f1"></div><div class="f2"></div><div class="f3"></div><div class="f4"></div><div class="f5"></div><div class="f6"></div></div>
+  <div class="cube c2"><div class="f1"></div><div class="f2"></div><div class="f3"></div><div class="f4"></div><div class="f5"></div><div class="f6"></div></div>
+  <div class="cube c3"><div class="f1"></div><div class="f2"></div><div class="f3"></div><div class="f4"></div><div class="f5"></div><div class="f6"></div></div>
+  <div class="cube c4"><div class="f1"></div><div class="f2"></div><div class="f3"></div><div class="f4"></div><div class="f5"></div><div class="f6"></div></div>
+  <div class="cube c5"><div class="f1"></div><div class="f2"></div><div class="f3"></div><div class="f4"></div><div class="f5"></div><div class="f6"></div></div>
+</div>
+
+<header>
+  <div class="brand-row">
+    <span class="mark">TB</span>
+    <div><h1>Toolbench</h1><p class="tag">30+ everyday utilities — nothing leaves your browser.</p></div>
+    <div class="topnav" id="topnav"></div>
+  </div>
+</header>
+
+<div class="wrap">
+  <nav id="toolnav"></nav>
+  <div class="plate" id="plate"></div>
+</div>
+
+<div class="overlay" id="auth-overlay">
+  <div class="modal">
+    <button class="modal-close" id="auth-close">✕</button>
+    <h3 id="auth-title">Log in</h3>
+    <p class="hint">Demo account — used only to greet you by name.</p>
+    <div class="tabs2"><button id="tab-login" class="on">Log in</button><button id="tab-signup">Sign up</button></div>
+    <label>Email</label><input type="email" id="auth-email" placeholder="you@example.com">
+    <label>Password</label><input type="password" id="auth-pass" placeholder="At least 4 characters">
+    <button class="go" id="auth-submit" style="width:100%">Log in</button>
+    <p class="notice">Demo login only. Stored solely in this browser (localStorage), never sent anywhere. See <span id="auth-privacy-link" style="text-decoration:underline;cursor:pointer">Privacy</span>.</p>
+  </div>
+</div>
+
+<script>
+/* ---------- Auth (demo, local-only) ---------- */
+const authOverlay = document.getElementById('auth-overlay');
+const topnav = document.getElementById('topnav');
+let mode='login', activeView='tools';
+function getUser(){ try{ return JSON.parse(localStorage.getItem('tb_user')||'null'); }catch(e){ return null; } }
+function setUser(u){ try{ localStorage.setItem('tb_user', JSON.stringify(u)); }catch(e){} }
+function getStore(){ try{ return JSON.parse(localStorage.getItem('tb_accounts')||'{}'); }catch(e){ return {}; } }
+function setStore(s){ try{ localStorage.setItem('tb_accounts', JSON.stringify(s)); }catch(e){} }
+function renderTopnav(){
+  const u=getUser();
+  const links=['Tools','Support','Privacy'].map(v=>{const id=v.toLowerCase();return `<button class="nav-link ${activeView===id?'on':''}" data-view="${id}">${v}</button>`;}).join('');
+  const authPart = u ? `<span class="user-chip">Hi, ${u.email.split('@')[0]}</span><button class="nav-link" id="logout-btn">Log out</button>` : `<button class="nav-link" id="login-btn">Log in / Sign up</button>`;
+  topnav.innerHTML = links + authPart;
+  topnav.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click', ()=>{ activeView=b.dataset.view; renderTopnav(); renderView(); }));
+  const lb=document.getElementById('login-btn'); if(lb) lb.addEventListener('click', openAuth);
+  const ob=document.getElementById('logout-btn'); if(ob) ob.addEventListener('click', ()=>{ localStorage.removeItem('tb_user'); renderTopnav(); });
+}
+function openAuth(){ authOverlay.classList.add('show'); }
+function closeAuth(){ authOverlay.classList.remove('show'); document.getElementById('auth-email').value=''; document.getElementById('auth-pass').value=''; }
+document.getElementById('auth-close').addEventListener('click', closeAuth);
+authOverlay.addEventListener('click', e=>{ if(e.target===authOverlay) closeAuth(); });
+document.getElementById('auth-privacy-link').addEventListener('click', ()=>{ closeAuth(); activeView='privacy'; renderTopnav(); renderView(); });
+function setMode(m){ mode=m; document.getElementById('tab-login').classList.toggle('on', m==='login'); document.getElementById('tab-signup').classList.toggle('on', m==='signup'); document.getElementById('auth-title').textContent = m==='login'?'Log in':'Sign up'; document.getElementById('auth-submit').textContent = m==='login'?'Log in':'Create account'; }
+document.getElementById('tab-login').addEventListener('click', ()=>setMode('login'));
+document.getElementById('tab-signup').addEventListener('click', ()=>setMode('signup'));
+document.getElementById('auth-submit').addEventListener('click', ()=>{
+  const email=document.getElementById('auth-email').value.trim().toLowerCase(), pass=document.getElementById('auth-pass').value;
+  if(!email||pass.length<4){ alert('Enter a valid email and a password of at least 4 characters.'); return; }
+  const store=getStore();
+  if(mode==='signup'){ if(store[email]){ alert('An account with this email already exists on this browser. Try logging in.'); return; } store[email]={pass}; setStore(store); setUser({email}); }
+  else{ if(!store[email]||store[email].pass!==pass){ alert('No matching demo account on this browser. Try signing up instead.'); return; } setUser({email}); }
+  closeAuth(); renderTopnav();
+});
+
+/* ---------- Views ---------- */
+const plate=document.getElementById('plate'), toolnav=document.getElementById('toolnav');
+function renderView(){
+  if(activeView==='tools'){ toolnav.style.display=''; buildToolNav(); loadTool(); }
+  else if(activeView==='support'){ toolnav.style.display='none'; plate.innerHTML=`<h2>Support</h2><p class="hint">Toolbench needs no account to use any calculator.</p>
+    <p class="doc"><b>A tool gives a wrong result.</b> Check units and decimal points — everything runs live in your browser, nothing is rounded on a server.</p>
+    <p class="doc"><b>Nothing saves between visits.</b> That's intentional — no data is stored except an optional demo login, kept only in this browser.</p>
+    <p class="doc"><b>Still stuck, or found a bug?</b> Reach us at <b>support@toolbench.example</b> and describe what you typed and what you expected.</p>`; }
+  else if(activeView==='privacy'){ toolnav.style.display='none'; plate.innerHTML=`<h2>Privacy</h2>
+    <p class="doc">No server sits behind these calculators. Every number or word you type is processed in your own browser and never transmitted anywhere.</p>
+    <p class="doc"><b>Login / sign-up.</b> This is a demo: email and password are saved only in this browser's local storage, unencrypted, never sent to us. Clearing browser data removes them completely. Don't reuse a real password here.</p>
+    <p class="doc"><b>Cookies & tracking.</b> None. No analytics, no ads, no third-party scripts beyond the Google Fonts stylesheet.</p>
+    <p class="doc">Questions: <b>privacy@toolbench.example</b></p>`; }
+}
+
+/* ---------- Generic field-based tool engine ---------- */
+function fieldHtml(f){
+  if(f.type==='select') return `<label>${f.label}</label><select id="f-${f.id}">${f.options.map(o=>`<option value="${o.v}">${o.l}</option>`).join('')}</select>`;
+  if(f.type==='textarea') return `<label>${f.label}</label><textarea id="f-${f.id}" placeholder="${f.placeholder||''}"></textarea>`;
+  if(f.type==='checkbox') return `<label style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="f-${f.id}" style="width:auto;box-shadow:none" ${f.checked?'checked':''}>${f.label}</label>`;
+  return `<label>${f.label}</label><input type="${f.type||'text'}" id="f-${f.id}" placeholder="${f.placeholder||''}">`;
+}
+function renderTool(el, t){
+  el.innerHTML = `<h2>${t.name}</h2><p class="hint">${t.hint}</p>${(t.fields||[]).map(fieldHtml).join('')}<button class="go" id="gt-go">${t.action||'Calculate'}</button><div class="out" id="gt-out">Result will appear here.</div>`;
+  el.querySelector('#gt-go').addEventListener('click', ()=>{
+    const vals={};
+    (t.fields||[]).forEach(f=>{ const node=el.querySelector('#f-'+f.id); vals[f.id]= f.type==='checkbox'? node.checked : node.value; });
+    let out; try{ out=t.compute(vals); }catch(e){ out='Check your inputs and try again.'; }
+    el.querySelector('#gt-out').innerHTML = out;
+  });
+}
+
+/* ---------- 32 tools ---------- */
+const num = v => parseFloat(v);
+const tools = [
+{id:'words',name:'Word Counter',hint:'Count words, characters and sentences.',action:'Count',fields:[{id:'t',label:'Text',type:'textarea'}],compute:v=>{const w=(v.t.trim().match(/\S+/g)||[]).length;return `Words: <b>${w}</b>\nCharacters: ${v.t.length}\nSentences: ${(v.t.match(/[.!?]+/g)||[]).length}\nReading time: ${Math.max(1,Math.round(w/3.5))}s`;}},
+{id:'case',name:'Case Converter',hint:'Convert text between letter cases.',action:'Convert',fields:[{id:'t',label:'Text',type:'textarea'},{id:'c',label:'Case',type:'select',options:[{v:'up',l:'UPPERCASE'},{v:'low',l:'lowercase'},{v:'title',l:'Title Case'},{v:'sent',l:'Sentence case'}]}],compute:v=>{let r=v.t;if(v.c==='up')r=v.t.toUpperCase();if(v.c==='low')r=v.t.toLowerCase();if(v.c==='title')r=v.t.replace(/\w\S*/g,w=>w[0].toUpperCase()+w.slice(1).toLowerCase());if(v.c==='sent')r=v.t.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g,c=>c.toUpperCase());return r||'Nothing to convert.';}},
+{id:'reverse',name:'Text Reverser',hint:'Reverse any string of text.',action:'Reverse',fields:[{id:'t',label:'Text',type:'text'}],compute:v=>v.t.split('').reverse().join('')||'Type something first.'},
+{id:'palin',name:'Palindrome Checker',hint:'Check if text reads the same backwards.',action:'Check',fields:[{id:'t',label:'Text',type:'text'}],compute:v=>{const c=v.t.toLowerCase().replace(/[^a-z0-9]/g,'');return c && c===c.split('').reverse().join('') ? '<b>Yes</b> — it is a palindrome.' : 'No, not a palindrome.';}},
+{id:'spaces',name:'Remove Extra Spaces',hint:'Clean up double spaces and stray line breaks.',action:'Clean',fields:[{id:'t',label:'Text',type:'textarea'}],compute:v=>v.t.replace(/[ \t]+/g,' ').replace(/\s*\n\s*/g,'\n').trim()||'Nothing to clean.'},
+{id:'slug',name:'Slug Generator',hint:'Turn a title into a URL-friendly slug.',action:'Generate',fields:[{id:'t',label:'Title',type:'text'}],compute:v=>v.t.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')||'Type a title first.'},
+{id:'age',name:'Age Calculator',hint:'Find exact age in years, months and days.',action:'Calculate',fields:[{id:'d',label:'Date of birth',type:'date'}],compute:v=>{if(!v.d)return 'Pick a date first.';const dob=new Date(v.d),now=new Date();let y=now.getFullYear()-dob.getFullYear(),m=now.getMonth()-dob.getMonth(),d=now.getDate()-dob.getDate();if(d<0){m--;d+=new Date(now.getFullYear(),now.getMonth(),0).getDate();}if(m<0){y--;m+=12;}return `<b>${y}</b> years, ${m} months, ${d} days\nTotal days lived: ${Math.floor((now-dob)/86400000).toLocaleString()}`;}},
+{id:'datediff',name:'Date Difference',hint:'Days between two dates.',action:'Calculate',fields:[{id:'a',label:'Start date',type:'date'},{id:'b',label:'End date',type:'date'}],compute:v=>{if(!v.a||!v.b)return 'Pick both dates.';const d=Math.round((new Date(v.b)-new Date(v.a))/86400000);return `<b>${Math.abs(d)}</b> days`;}},
+{id:'countdown',name:'Countdown Calculator',hint:'Days left until a future date.',action:'Calculate',fields:[{id:'d',label:'Target date',type:'date'}],compute:v=>{if(!v.d)return 'Pick a date.';const days=Math.ceil((new Date(v.d)-new Date())/86400000);return days>=0?`<b>${days}</b> days left`:`That date was <b>${Math.abs(days)}</b> days ago`;}},
+{id:'emi',name:'Loan EMI',hint:'Estimate your monthly instalment.',action:'Calculate',fields:[{id:'p',label:'Loan amount',type:'number',placeholder:'e.g. 500000'},{id:'r',label:'Annual interest %',type:'number',placeholder:'e.g. 12'},{id:'n',label:'Tenure (months)',type:'number',placeholder:'e.g. 36'}],compute:v=>{const P=num(v.p),annR=num(v.r),n=num(v.n);if(!P||!annR||!n)return 'Fill in all three fields.';const r=annR/12/100,emi=r===0?P/n:(P*r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1),total=emi*n;return `Monthly EMI: <b>${emi.toFixed(2)}</b>\nTotal payment: ${total.toFixed(2)}\nTotal interest: ${(total-P).toFixed(2)}`;}},
+{id:'si',name:'Simple Interest',hint:'Interest = P × R × T / 100.',action:'Calculate',fields:[{id:'p',label:'Principal',type:'number'},{id:'r',label:'Rate % / year',type:'number'},{id:'t',label:'Time (years)',type:'number'}],compute:v=>{const P=num(v.p),R=num(v.r),T=num(v.t);if(!P||!R||!T)return 'Fill in all fields.';const i=(P*R*T)/100;return `Interest: <b>${i.toFixed(2)}</b>\nTotal amount: ${(P+i).toFixed(2)}`;}},
+{id:'ci',name:'Compound Interest',hint:'Interest compounded yearly.',action:'Calculate',fields:[{id:'p',label:'Principal',type:'number'},{id:'r',label:'Rate % / year',type:'number'},{id:'t',label:'Time (years)',type:'number'}],compute:v=>{const P=num(v.p),R=num(v.r),T=num(v.t);if(!P||!R||!T)return 'Fill in all fields.';const total=P*Math.pow(1+R/100,T);return `Total amount: <b>${total.toFixed(2)}</b>\nInterest earned: ${(total-P).toFixed(2)}`;}},
+{id:'pct',name:'Percentage Calculator',hint:'What is X% of Y.',action:'Calculate',fields:[{id:'p',label:'Percentage',type:'number',placeholder:'e.g. 20'},{id:'v',label:'Of value',type:'number',placeholder:'e.g. 500'}],compute:v=>{const p=num(v.p),val=num(v.v);if(isNaN(p)||isNaN(val))return 'Fill in both fields.';return `<b>${(p*val/100).toFixed(2)}</b>`;}},
+{id:'discount',name:'Discount Calculator',hint:'Final price after a % discount.',action:'Calculate',fields:[{id:'p',label:'Original price',type:'number'},{id:'d',label:'Discount %',type:'number'}],compute:v=>{const p=num(v.p),d=num(v.d);if(!p||isNaN(d))return 'Fill in both fields.';const save=p*d/100;return `Final price: <b>${(p-save).toFixed(2)}</b>\nYou save: ${save.toFixed(2)}`;}},
+{id:'tip',name:'Tip Calculator',hint:'Split a bill with tip.',action:'Calculate',fields:[{id:'b',label:'Bill amount',type:'number'},{id:'t',label:'Tip %',type:'number',placeholder:'e.g. 10'},{id:'p',label:'Number of people',type:'number',placeholder:'1'}],compute:v=>{const b=num(v.b),t=num(v.t)||0,p=num(v.p)||1;if(!b)return 'Enter the bill amount.';const tip=b*t/100,total=b+tip;return `Tip: <b>${tip.toFixed(2)}</b>\nTotal: ${total.toFixed(2)}\nPer person: ${(total/p).toFixed(2)}`;}},
+{id:'tax',name:'Tax / GST Calculator',hint:'Add or find tax on an amount.',action:'Calculate',fields:[{id:'a',label:'Amount (excl. tax)',type:'number'},{id:'r',label:'Tax rate %',type:'number',placeholder:'e.g. 17'}],compute:v=>{const a=num(v.a),r=num(v.r);if(!a||isNaN(r))return 'Fill in both fields.';const tax=a*r/100;return `Tax: <b>${tax.toFixed(2)}</b>\nTotal with tax: ${(a+tax).toFixed(2)}`;}},
+{id:'margin',name:'Profit Margin',hint:'Margin from cost and selling price.',action:'Calculate',fields:[{id:'c',label:'Cost price',type:'number'},{id:'s',label:'Selling price',type:'number'}],compute:v=>{const c=num(v.c),s=num(v.s);if(!c||!s)return 'Fill in both fields.';const profit=s-c,margin=(profit/s)*100;return `Profit: <b>${profit.toFixed(2)}</b>\nMargin: ${margin.toFixed(2)}%`;}},
+{id:'avg',name:'Average Calculator',hint:'Mean of a list of numbers, comma separated.',action:'Calculate',fields:[{id:'n',label:'Numbers',type:'text',placeholder:'e.g. 4, 8, 15, 16'}],compute:v=>{const arr=v.n.split(',').map(x=>parseFloat(x.trim())).filter(x=>!isNaN(x));if(!arr.length)return 'Enter comma-separated numbers.';const sum=arr.reduce((a,b)=>a+b,0);return `Average: <b>${(sum/arr.length).toFixed(2)}</b>\nSum: ${sum}\nCount: ${arr.length}`;}},
+{id:'gcdlcm',name:'GCD & LCM',hint:'Greatest common divisor and least common multiple.',action:'Calculate',fields:[{id:'a',label:'Number A',type:'number'},{id:'b',label:'Number B',type:'number'}],compute:v=>{let a=Math.abs(Math.round(num(v.a))),b=Math.abs(Math.round(num(v.b)));if(!a||!b)return 'Enter two whole numbers.';const g=(x,y)=>y?g(y,x%y):x;const gcd=g(a,b),lcm=(a*b)/gcd;return `GCD: <b>${gcd}</b>\nLCM: ${lcm}`;}},
+{id:'prime',name:'Prime Checker',hint:'Check whether a number is prime.',action:'Check',fields:[{id:'n',label:'Number',type:'number'}],compute:v=>{const n=Math.round(num(v.n));if(!n||n<2)return 'Not prime.';for(let i=2;i*i<=n;i++)if(n%i===0)return 'Not prime.';return `<b>${n}</b> is prime.`;}},
+{id:'fact',name:'Factorial Calculator',hint:'n! for whole numbers up to 170.',action:'Calculate',fields:[{id:'n',label:'Number',type:'number'}],compute:v=>{const n=Math.round(num(v.n));if(n<0||n>170||isNaN(n))return 'Enter a whole number from 0 to 170.';let r=1;for(let i=2;i<=n;i++)r*=i;return `<b>${r.toLocaleString()}</b>`;}},
+{id:'rand',name:'Random Number Generator',hint:'A random whole number in a range.',action:'Generate',fields:[{id:'a',label:'Min',type:'number',placeholder:'1'},{id:'b',label:'Max',type:'number',placeholder:'100'}],compute:v=>{const a=Math.round(num(v.a)),b=Math.round(num(v.b));if(isNaN(a)||isNaN(b)||a>=b)return 'Min must be less than max.';return `<b>${Math.floor(Math.random()*(b-a+1))+a}</b>`;}},
+{id:'pw',name:'Password Generator',hint:'A random password, generated locally.',action:'Generate',fields:[{id:'len',label:'Length (6–32)',type:'number',placeholder:'14'},{id:'sym',label:'Include symbols',type:'checkbox',checked:true},{id:'num',label:'Include numbers',type:'checkbox',checked:true},{id:'up',label:'Include uppercase',type:'checkbox',checked:true}],compute:v=>{let len=Math.round(num(v.len))||14;len=Math.min(32,Math.max(6,len));let chars='abcdefghijklmnopqrstuvwxyz';if(v.up)chars+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';if(v.num)chars+='0123456789';if(v.sym)chars+='!@#$%^&*()_+-=';const arr=new Uint32Array(len);crypto.getRandomValues(arr);let pass='';for(let i=0;i<len;i++)pass+=chars[arr[i]%chars.length];return pass;}},
+{id:'bmi',name:'BMI Calculator',hint:'Body mass index from height and weight.',action:'Calculate',fields:[{id:'h',label:'Height (cm)',type:'number'},{id:'w',label:'Weight (kg)',type:'number'}],compute:v=>{const h=num(v.h)/100,w=num(v.w);if(!h||!w)return 'Enter height and weight.';const bmi=w/(h*h);const cat=bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';return `BMI: <b>${bmi.toFixed(1)}</b>\nCategory: ${cat}`;}},
+{id:'unit',name:'Length/Weight Converter',hint:'Convert between common length or weight units.',action:'Convert',fields:[{id:'cat',label:'Category',type:'select',options:[{v:'length',l:'Length'},{v:'weight',l:'Weight'}]},{id:'from',label:'From unit',type:'text',placeholder:'m, km, cm, mm, mile, yard, foot, inch, kg, g, mg, lb, oz, ton'},{id:'to',label:'To unit',type:'text',placeholder:'same list'},{id:'val',label:'Value',type:'number'}],compute:v=>{const groups={length:{m:1,km:1000,cm:0.01,mm:0.001,mile:1609.34,yard:0.9144,foot:0.3048,inch:0.0254},weight:{kg:1,g:0.001,mg:0.000001,lb:0.453592,oz:0.0283495,ton:1000}};const g=groups[v.cat];const f=g[v.from.trim().toLowerCase()],t=g[v.to.trim().toLowerCase()],val=num(v.val);if(!f||!t||isNaN(val))return 'Check unit names and value.';return `<b>${((val*f)/t).toFixed(6).replace(/\.?0+$/,'')}</b> ${v.to}`;}},
+{id:'temp',name:'Temperature Converter',hint:'Celsius, Fahrenheit or Kelvin.',action:'Convert',fields:[{id:'val',label:'Value',type:'number'},{id:'from',label:'From',type:'select',options:[{v:'c',l:'Celsius'},{v:'f',l:'Fahrenheit'},{v:'k',l:'Kelvin'}]},{id:'to',label:'To',type:'select',options:[{v:'f',l:'Fahrenheit'},{v:'c',l:'Celsius'},{v:'k',l:'Kelvin'}]}],compute:v=>{const val=num(v.val);if(isNaN(val))return 'Enter a value.';let c;if(v.from==='c')c=val;if(v.from==='f')c=(val-32)*5/9;if(v.from==='k')c=val-273.15;let r;if(v.to==='c')r=c;if(v.to==='f')r=c*9/5+32;if(v.to==='k')r=c+273.15;return `<b>${r.toFixed(2)}</b>`;}},
+{id:'speed',name:'Speed Converter',hint:'km/h, mph, and m/s.',action:'Convert',fields:[{id:'val',label:'Value',type:'number'},{id:'from',label:'From',type:'select',options:[{v:'kmh',l:'km/h'},{v:'mph',l:'mph'},{v:'ms',l:'m/s'}]},{id:'to',label:'To',type:'select',options:[{v:'mph',l:'mph'},{v:'kmh',l:'km/h'},{v:'ms',l:'m/s'}]}],compute:v=>{const val=num(v.val);if(isNaN(val))return 'Enter a value.';const toMs={kmh:v=>v/3.6,mph:v=>v*0.44704,ms:v=>v};const fromMs={kmh:v=>v*3.6,mph:v=>v/0.44704,ms:v=>v};const ms=toMs[v.from](val);return `<b>${fromMs[v.to](ms).toFixed(3)}</b>`;}},
+{id:'bin',name:'Binary ⇄ Decimal',hint:'Convert between binary and decimal.',action:'Convert',fields:[{id:'n',label:'Number',type:'text',placeholder:'e.g. 101 or 42'},{id:'dir',label:'Direction',type:'select',options:[{v:'b2d',l:'Binary → Decimal'},{v:'d2b',l:'Decimal → Binary'}]}],compute:v=>{if(v.dir==='b2d'){if(!/^[01]+$/.test(v.n.trim()))return 'Enter a valid binary number.';return `<b>${parseInt(v.n.trim(),2)}</b>`;}const n=parseInt(v.n.trim(),10);if(isNaN(n)||n<0)return 'Enter a valid whole decimal number.';return `<b>${n.toString(2)}</b>`;}},
+{id:'roman',name:'Roman Numeral Converter',hint:'Number (1–3999) to Roman numerals.',action:'Convert',fields:[{id:'n',label:'Number',type:'number'}],compute:v=>{let n=Math.round(num(v.n));if(!n||n<1||n>3999)return 'Enter a number from 1 to 3999.';const map=[[1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],[100,'C'],[90,'XC'],[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];let r='';for(const [val,sym] of map){while(n>=val){r+=sym;n-=val;}}return `<b>${r}</b>`;}},
+{id:'hexrgb',name:'Hex ⇄ RGB Color',hint:'Convert a hex color code to RGB.',action:'Convert',fields:[{id:'h',label:'Hex color',type:'text',placeholder:'#FF7A1A'}],compute:v=>{const h=v.h.trim().replace('#','');if(!/^[0-9a-fA-F]{6}$/.test(h))return 'Enter a valid 6-digit hex code.';const r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);return `<b>rgb(${r}, ${g}, ${b})</b>`;}},
+{id:'fuel',name:'Fuel Cost Calculator',hint:'Estimate trip fuel cost.',action:'Calculate',fields:[{id:'d',label:'Distance (km)',type:'number'},{id:'m',label:'Mileage (km per litre)',type:'number'},{id:'p',label:'Price per litre',type:'number'}],compute:v=>{const d=num(v.d),m=num(v.m),p=num(v.p);if(!d||!m||!p)return 'Fill in all fields.';const litres=d/m,cost=litres*p;return `Fuel needed: <b>${litres.toFixed(2)} L</b>\nEstimated cost: ${cost.toFixed(2)}`;}},
+{id:'curr',name:'Manual Currency Converter',hint:'Convert using a rate you enter yourself.',action:'Convert',fields:[{id:'amt',label:'Amount',type:'number'},{id:'rate',label:'Exchange rate (1 unit = ?)',type:'number',placeholder:'e.g. 278.5'}],compute:v=>{const amt=num(v.amt),rate=num(v.rate);if(!amt||!rate)return 'Fill in both fields.';return `<b>${(amt*rate).toFixed(2)}</b>`;}},
+];
+
+let activeTool='words';
+function buildToolNav(){
+  toolnav.innerHTML = tools.map(t=>`<button class="tool-btn ${t.id===activeTool?'active':''}" data-id="${t.id}">${t.name}</button>`).join('');
+  toolnav.querySelectorAll('.tool-btn').forEach(b=>b.addEventListener('click', ()=>{ activeTool=b.dataset.id; buildToolNav(); loadTool(); }));
+}
+function loadTool(){ renderTool(plate, tools.find(t=>t.id===activeTool)); }
+
+renderTopnav();
+renderView();
+</script>
+</body>
+</html>
